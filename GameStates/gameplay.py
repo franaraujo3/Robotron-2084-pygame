@@ -27,8 +27,8 @@ class Gameplay(GameState):
         self.sprites = level.get_group()
         self.ships = pygame.sprite.Group()
         self.pickups = pygame.sprite.Group()
-        self.humans = []
-        self.catchers = []
+        self.humans = pygame.sprite.Group()
+        self.catchers = pygame.sprite.Group()
         self.temp_pickups = []
         ship = PlayerShip('Sprites/Player/Player_Walking_Down', (screen_width / 2 - 100, screen_height - 140))
         self.health_bars = pygame.sprite.Group()
@@ -37,19 +37,25 @@ class Gameplay(GameState):
         self.health_bars.add(health1)
         self.players = [ship]
         self.ships.add(ship)
-        self.enemies = []
+        self.enemies = pygame.sprite.Group()
         for ship in self.ships.sprites():
             self.sprites.add(ship)
         self.level_progress = 0
         self.wave_progress = 0
         self.level_timer = 0
-        self.boss_fight = False
+        self.transition = 2
         self.done = False
         self.next_state = "GAMEOVER"
 
     # Check if an event happens
     def check_event(self, event):
         global on_boss
+        if self.transition > 0:
+            self.players[0].stop(1, -1)
+            self.players[0].stop(1, 1)
+            self.players[0].stop(0, -1)
+            self.players[0].stop(0, 1)
+            return
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 self.players[0].stop(1, -1)
@@ -82,10 +88,8 @@ class Gameplay(GameState):
         self.health_bars.update()
         self.sprites.update()
         self.pickups.update()
-
-        if pygame.mouse.get_pressed()[0]:
+        if pygame.mouse.get_pressed()[0] and self.transition <= 0:
             self.players[0].shoot_()
-
         for ship in self.ships.sprites():
             ship.shot_sprites.update()
             for pickup in self.pickups.sprites():
@@ -97,7 +101,7 @@ class Gameplay(GameState):
         for catcher in self.catchers:
             for human in self.humans:
                 self.human_collision(catcher, human)
-        for enemy in self.enemies:
+        for enemy in self.enemies.sprites():
             enemy.shot_sprites.update()
             for ship in self.ships.sprites():
                 self.shoot_collision(ship, enemy)
@@ -118,36 +122,44 @@ class Gameplay(GameState):
             self.level_timer -= 1
             return
         if self.level_progress >= len(self.level.rounds):
-            game_level += 1
             self.level_progress = 0
             self.wave_progress = 0
             self.temp_pickups.clear()
             self.level.get_level(game_level)
             self.level_timer = 200
             return
-        current_round = self.level.rounds[self.level_progress]
-        self.add_waves(current_round)
+        if self.transition == 2:
+            current_round = self.level.rounds[self.level_progress]
+            self.add_waves(current_round)
+            self.level_progress += 1
+            self.transition = 0
+        elif self.transition == 1:
+            for enemy in self.enemies.sprites():
+                enemy.kill()
+            for human in self.humans:
+                self.human_collect(human)
+            self.players[0].rect.x = random.randint(200, 1400)
+            self.players[0].rect.y = random.randint(200, 700)
+            self.transition = 2
+            self.level_timer = 100
+        elif len(self.enemies.sprites()) <= len(self.catchers.sprites()):
+            self.transition = 1
+            self.level_timer = 100
 
     def add_waves(self, current_round):
-        if self.wave_progress < 60:
-            for wave in current_round:
-                if self.wave_progress % (60 / wave.number) == 0:
-                    enemy = self.level.make_enemy(wave.enemy)
-                    if not enemy.friend:
-                        self.enemies.append(enemy)
-                    else:
-                        self.humans.append(enemy)
-                    if enemy.aimed:
-                        self.aim_enemies.append(enemy)
-                    if enemy.catcher:
-                        self.catchers.append(enemy)
-                    self.sprites.add(enemy)
-                    self.level_timer = 60 / wave.number
-            self.wave_progress += 1
-        else:
-            self.level_progress += 1
-            self.wave_progress = 0
-            self.level_timer = 470
+        for wave in current_round:
+            for i in range(wave.number):
+                npc = self.level.make_enemy(wave.enemy)
+                if not npc.friend:
+                    self.enemies.add(npc)
+                else:
+                    self.humans.add(npc)
+                if npc.aimed:
+                    self.aim_enemies.append(npc)
+                if npc.catcher:
+                    self.catchers.add(npc)
+                self.sprites.add(npc)
+                self.level_timer = 60 / wave.number
 
     # Draws Elements
     def draw(self, screen):
@@ -218,6 +230,11 @@ class Gameplay(GameState):
     def human_collision(self, ship, human):
         if pygame.sprite.collide_mask(ship, human):
             if not ship.catcher:
-                self.score += 1000+self.humans_rescued*1000
-                self.humans_rescued += 1
-            human.kill()
+                self.human_collect(human)
+            else:
+                human.kill()
+
+    def human_collect(self, human):
+        self.score += 1000 + self.humans_rescued * 1000
+        self.humans_rescued += 1
+        human.kill()

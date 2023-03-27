@@ -11,7 +11,7 @@ class Levels:
         self.wave_progress = 0
         self.get_level(level)
         self.wall_color = "#d4a941"
-        self.bg_color = "#150d28"
+        self.bg_color = "#000000"
 
         # for layout in self.layouts[layout_type - 1]:
         #    self.group.add(wall.Wall(self.wall_color, layout[0], layout[1]))
@@ -31,7 +31,7 @@ class Levels:
             self.rounds.append(waves)
             waves = [Wave(0, 6), Wave(1, 2), Wave(1, 2)]
             self.rounds.append(waves)
-            waves = [Wave(2, 10)]
+            waves = [Wave(2, 8), Wave(1, 10)]
             self.rounds.append(waves)
             waves = [Wave(1, 3), Wave(2, 6)]
             self.rounds.append(waves)
