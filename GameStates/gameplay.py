@@ -26,7 +26,7 @@ class Gameplay(GameState):
         self.ships = pygame.sprite.Group()
         self.pickups = pygame.sprite.Group()
         self.temp_pickups = []
-        ship = PlayerShip('Sprites/Player', (screen_width / 2 - 100, screen_height - 140))
+        ship = PlayerShip('Sprites/Player/Player_Walking_Down', (screen_width / 2 - 100, screen_height - 140))
         self.health_bars = pygame.sprite.Group()
         health1 = HealthBar(ship, 'ship_healthbar', 600, 420)
         health1.rect.center = (0, -50)

@@ -14,7 +14,13 @@ class Human(Npc):
         self.hp = 20
         self.damage = 0
         self.friend = True
-        self.make_ship('Sprites/Player', 'Sprites/enemy_fire')
+        randNum = random.randint(0, 2)
+        if randNum == 0:
+            self.make_ship('Sprites/Family/Daddy/Daddy_Walk_Down')
+        elif randNum == 1:
+            self.make_ship('Sprites/Family/Mommy/Mommy_Walk_Down')
+        elif randNum == 2:
+            self.make_ship('Sprites/Family/Tommy/Tommy_Walk_Down')
         self.move_timer = 0
         self.pos = pygame.math.Vector2(self.rect.x, self.rect.y)
         self.vel = pygame.math.Vector2(0, 0)
@@ -33,9 +39,9 @@ class Human(Npc):
 class Grunt(Npc):
     def __init__(self):
         super().__init__()
-        self.hp = 20
+        self.hp = 1
         self.damage = 1
-        self.make_ship('Sprites/enemy_1', 'Sprites/enemy_fire')
+        self.make_ship('Sprites/EnemyGrunt', 'Sprites/enemy_fire')
         self.move_timer = 0
         self.aimed = True
         self.target = pygame.math.Vector2(0, 0)
@@ -61,12 +67,12 @@ class Grunt(Npc):
 class Hulk(Npc):
     def __init__(self, ):
         super().__init__()
-        self.hp = 40
+        self.hp = 999
         self.shot_speed = 5
         self.shot_time = 150
         self.damage = 1
         self.shot_tilt = 0
-        self.make_ship('Sprites/enemy_2', 'Sprites/enemy_fire2')
+        self.make_ship('Sprites/EnemyHulk/Hulk_Walk_Down_Up', 'Sprites/enemy_fire2')
         self.move_timer = 0
         self.pos = pygame.math.Vector2(self.rect.x, self.rect.y)
         self.vel = pygame.math.Vector2(0, 0)
