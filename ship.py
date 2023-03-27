@@ -22,9 +22,10 @@ class Ship(AnimatedSprite):
         self.dead = False
         self.boss = False
 
-    def make_ship(self, path, shot):
+    def make_ship(self, path, shot=None):
         self.load_path(path)
-        self.shot_sprite = shot
+        if shot is not None:
+            self.shot_sprite = shot
 
     def shoot_(self):
         self.shoot = True

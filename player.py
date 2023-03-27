@@ -12,7 +12,7 @@ class PlayerShip(Ship):
         self.shot_time = 10
         self.shot_speed = 10
         self.move_speed = 6
-        self.damage = 10
+        self.damage = 1
         self.max_hp = 5
         self.hp = 5
         self.make_ship(sheet, 'Sprites/fire')
