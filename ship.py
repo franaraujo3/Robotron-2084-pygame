@@ -21,6 +21,7 @@ class Ship(AnimatedSprite):
         self.shoot_time = 0
         self.dead = False
         self.boss = False
+        self.catcher = False
 
     def make_ship(self, path, shot=None):
         self.load_path(path)

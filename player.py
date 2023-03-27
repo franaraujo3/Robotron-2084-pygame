@@ -8,7 +8,6 @@ from config import *
 class PlayerShip(Ship):
     def __init__(self, sheet, pos):
         super().__init__()
-        self.score = 0
         self.shot_time = 10
         self.shot_speed = 10
         self.move_speed = 6

@@ -22,9 +22,13 @@ class Gameplay(GameState):
         level = Levels(game_level)
         self.background = level.get_bg_color()
         self.level = level
+        self.score = 0
+        self.humans_rescued = 0
         self.sprites = level.get_group()
         self.ships = pygame.sprite.Group()
         self.pickups = pygame.sprite.Group()
+        self.humans = []
+        self.catchers = []
         self.temp_pickups = []
         ship = PlayerShip('Sprites/Player/Player_Walking_Down', (screen_width / 2 - 100, screen_height - 140))
         self.health_bars = pygame.sprite.Group()
@@ -86,9 +90,13 @@ class Gameplay(GameState):
             ship.shot_sprites.update()
             for pickup in self.pickups.sprites():
                 self.pickup_collision(ship, pickup)
+            for human in self.humans:
+                self.human_collision(ship, human)
             for pickup in self.temp_pickups:
                 pickup.wear(ship)
-
+        for catcher in self.catchers:
+            for human in self.humans:
+                self.human_collision(catcher, human)
         for enemy in self.enemies:
             enemy.shot_sprites.update()
             for ship in self.ships.sprites():
@@ -127,8 +135,12 @@ class Gameplay(GameState):
                     enemy = self.level.make_enemy(wave.enemy)
                     if not enemy.friend:
                         self.enemies.append(enemy)
+                    else:
+                        self.humans.append(enemy)
                     if enemy.aimed:
                         self.aim_enemies.append(enemy)
+                    if enemy.catcher:
+                        self.catchers.append(enemy)
                     self.sprites.add(enemy)
                     self.level_timer = 60 / wave.number
             self.wave_progress += 1
@@ -200,8 +212,12 @@ class Gameplay(GameState):
 
     def pickup_collision(self, ship, pickup):
         if pygame.sprite.collide_mask(ship, pickup):
-            if pickup.type == 1 and len(self.ships) < len(self.players):
-                self.revive_player()
-            else:
-                pickup.effect(ship)
+            pickup.effect(ship)
             pickup.kill()
+
+    def human_collision(self, ship, human):
+        if pygame.sprite.collide_mask(ship, human):
+            if not ship.catcher:
+                self.score += 1000+self.humans_rescued*1000
+                self.humans_rescued += 1
+            human.kill()
