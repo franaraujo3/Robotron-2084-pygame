@@ -45,7 +45,8 @@ class Gameplay(GameState):
         self.transition = 2
         self.done = False
         self.died_lol = False
-        self.next_state = "GAMEOVER"
+        self.next_state = "GAMEPLAY"
+        bossChannel.play(nextLevelSoundEffect)
 
     # Check if an event happens
     def check_event(self, event):
@@ -153,6 +154,7 @@ class Gameplay(GameState):
             self.transition = 1
             self.level_timer = 100
             self.level_progress += 1
+            nextLevelSoundEffect.play()
 
     def add_waves(self, current_round):
         for wave in current_round:
@@ -222,13 +224,16 @@ class Gameplay(GameState):
         if pygame.sprite.collide_mask(ship, human):
             if not ship.catcher:
                 self.human_collect(human)
+                humanCollectSoundEffect.play()
             else:
                 human.kill()
+                humanDeathSoundEffect.play()
 
     @staticmethod
     def enemy_collision(ship, enemy):
         if pygame.sprite.collide_mask(ship, enemy):
             ship.lose_hp(enemy.damage)
+            bossChannel.play(playerDeathSoundEffect)
 
     def human_collect(self, human):
         if not self.died_lol:

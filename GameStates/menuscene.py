@@ -15,14 +15,13 @@ class MenuState(GameState):
         self.press_rect = self.press.get_rect(topleft=(500, 650))
         self.logo = pygame.image.load("Sprites/UI/SPACE SHOOTERS.png")
         self.logo_rect = self.logo.get_rect(topleft=(125, 150))
-        menuMusic.play(-1)
 
     # Check if an event happens
     def check_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                self.done = True
-               menuMusic.fadeout(3000)
+               bossChannel.play(nextLevelSoundEffect)
 
     def draw(self, screen):
         screen.blit(self.background, self.background_rect)
