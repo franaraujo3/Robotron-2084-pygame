@@ -104,6 +104,7 @@ class Gameplay(GameState):
         for enemy in self.enemies.sprites():
             enemy.shot_sprites.update()
             for ship in self.ships.sprites():
+                self.enemy_collision(ship, enemy)
                 self.shoot_collision(ship, enemy)
                 self.shoot_collision(enemy, ship)
         for enemy in self.aim_enemies:
@@ -233,6 +234,11 @@ class Gameplay(GameState):
                 self.human_collect(human)
             else:
                 human.kill()
+
+    @staticmethod
+    def enemy_collision(ship, enemy):
+        if pygame.sprite.collide_mask(ship, enemy):
+            ship.lose_hp(enemy.damage)
 
     def human_collect(self, human):
         self.score += 1000 + self.humans_rescued * 1000

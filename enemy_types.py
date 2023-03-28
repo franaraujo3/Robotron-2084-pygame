@@ -4,8 +4,7 @@ import pygame
 import math
 
 from npc import Npc
-from shot import Shot
-from shot import SplitShot
+from shot import BounceShot
 
 
 class Human(Npc):
@@ -120,3 +119,57 @@ class Hulk(Npc):
             self.load_path('Sprites/EnemyHulk/Hulk_Walk_Left')
         else:
             self.load_path('Sprites/EnemyHulk/Hulk_Walk_Down_Up')
+
+
+class Electrode(Npc):
+    def __init__(self):
+        super().__init__()
+        self.hp = 1
+        self.damage = 1
+        self.make_ship('Sprites/enemy_1', 'Sprites/enemy_fire')
+        self.move_timer = 0
+        self.target = pygame.math.Vector2(0, 0)
+
+
+class Tank(Npc):
+    def __init__(self, ):
+        super().__init__()
+        self.hp = 1
+        self.shot_speed = 5
+        self.shot_time = 150
+        self.damage = 1
+        self.shot_tilt = 0
+        self.make_ship('Sprites/enemy_3', 'Sprites/enemy_fire2')
+        self.move_timer = 0
+        self.pos = pygame.math.Vector2(self.rect.x, self.rect.y)
+        self.vel = pygame.math.Vector2(0, 0)
+        self.aimed = True
+        self.target = pygame.math.Vector2(0, 0)
+
+    def move(self):
+        if self.move_timer > 0:
+            self.move_timer -= 1
+        else:
+            self.move_timer = 150
+            num = random.randint(0, 7)
+            angle = num / 8 * math.pi * 2
+            self.vel = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+            # self.anim_path(num)
+        self.pos += self.vel * 1
+        if self.pos.x < 200 or self.pos.x > 1400 or self.pos.y < 100 or self.pos.y > 800:
+            self.move_timer = 0
+        else:
+            self.rect.center = [int(self.pos.x), int(self.pos.y)]
+
+    def anim_path(self, num):
+        pass
+
+    def create_shots(self):
+        shot_direction = pygame.math.Vector2(self.target.x - self.rect.centerx,
+                                             self.target.y - self.rect.centery).normalize()
+        shots = [BounceShot(self, shot_direction.x*5, shot_direction.y*5, shot_direction.x, shot_direction.y, 2)]
+        return shots
+
+    def set_target(self, target):
+        self.target = target
+

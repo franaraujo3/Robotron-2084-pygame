@@ -27,16 +27,16 @@ class Levels:
         self.wave_progress = 0
         self.rounds = []
         if level == 0:
-            waves = [Wave(0, 3), Wave(1, 10)]
+            waves = [Wave(0, 3), Wave(1, 10), Wave(3, 8)]
             self.rounds.append(waves)
-            waves = [Wave(0, 6), Wave(1, 2), Wave(1, 2)]
+            waves = [Wave(0, 6), Wave(1, 2), Wave(1, 2), Wave(3, 8)]
             self.rounds.append(waves)
-            waves = [Wave(2, 8), Wave(1, 10)]
+            waves = [Wave(2, 8), Wave(1, 10), Wave(5, 8)]
             self.rounds.append(waves)
-            waves = [Wave(1, 3), Wave(2, 6)]
+            waves = [Wave(1, 3), Wave(2, 6), Wave(3, 8)]
             self.rounds.append(waves)
             waves = [Wave(0, 6), Wave(2, 6),
-                     Wave(1, 2), Wave(1, 2)]
+                     Wave(1, 2), Wave(1, 2), Wave(5, 8)]
             self.rounds.append(waves)
         pass
 
@@ -49,4 +49,8 @@ class Levels:
             enemy = Grunt()
         elif number == 2:
             enemy = Hulk()
+        elif number == 3:
+            enemy = Electrode()
+        elif number == 5:
+            enemy = Tank()
         return enemy
