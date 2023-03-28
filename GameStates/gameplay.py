@@ -5,7 +5,6 @@ import pygame.math
 from level import Levels
 from player import PlayerShip
 from healthbar import HealthBar
-from pickup import *
 from config import *
 from config import screen_height
 from animation import AnimatedSprite
@@ -98,6 +97,7 @@ class Gameplay(GameState):
                 self.human_collision(ship, human)
             for pickup in self.temp_pickups:
                 pickup.wear(ship)
+                pickup.wear(ship)
         for catcher in self.catchers:
             for human in self.humans:
                 self.human_collision(catcher, human)
@@ -114,8 +114,13 @@ class Gameplay(GameState):
 
         self.progress_level()
         if len(self.ships) == 0:
-            self.done = True
-            pygame.mixer.fadeout(1500)
+            if self.players[0].hp <= 0:
+                self.done = True
+                pygame.mixer.fadeout(1500)
+            else:
+                self.ships.add(self.players[0])
+                self.sprites.add(self.players[0])
+                self.transition = 1
 
     def progress_level(self):
         global game_level
@@ -132,7 +137,6 @@ class Gameplay(GameState):
         if self.transition == 2:
             current_round = self.level.rounds[self.level_progress]
             self.add_waves(current_round)
-            self.level_progress += 1
             self.transition = 0
         elif self.transition == 1:
             for enemy in self.enemies.sprites():
@@ -146,6 +150,7 @@ class Gameplay(GameState):
         elif len(self.enemies.sprites()) <= len(self.catchers.sprites()):
             self.transition = 1
             self.level_timer = 100
+            self.level_progress += 1
 
     def add_waves(self, current_round):
         for wave in current_round:
@@ -184,29 +189,12 @@ class Gameplay(GameState):
             return
         close = self.get_closest_to(ship_two, ship_one.shot_sprites)
         if pygame.sprite.collide_mask(close, ship_two):
-            if ship_two.lose_hp(ship_one.damage):
-                if random.randint(0, 100) <= 10:
-                    self.random_pickup(ship_two.rect.center)
+            ship_two.lose_hp(ship_one.damage)
             explosion = AnimatedSprite(0.5, True, 'Sprites/Boom', 64, 64)
             self.sprites.add(explosion)
             explosion.rect.center = close.rect.midtop
             close.kill()
             del close
-
-    def random_pickup(self, pos):
-        choice = random.randint(0, 3)
-        if choice == 0:
-            pickup = HealthPickup()
-        elif choice == 1:
-            pickup = SpeedPickup()
-        elif choice == 2:
-            pickup = ShotSpeedPickup()
-        else:
-            pickup = HealthPickup()
-        self.pickups.add(pickup)
-        if pickup.temporary:
-            self.temp_pickups.append(pickup)
-        pickup.rect.center = pos
 
     @staticmethod
     def get_closest_to(sprite, group):
@@ -243,4 +231,6 @@ class Gameplay(GameState):
     def human_collect(self, human):
         self.score += 1000 + self.humans_rescued * 1000
         self.humans_rescued += 1
+        if self.humans_rescued % 10 == 0:
+            self.players[0].hp += 1
         human.kill()

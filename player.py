@@ -35,7 +35,9 @@ class PlayerShip(Ship):
 
     def lose_hp(self, damage):
         if self.invincible_timer <= 0:
-            super().lose_hp(damage)
+            self.hp -= 1
+            self.kill()
+            explosionSoundEffect.play()
             self.invincible_timer = self.invincibility_time
 
     def shoot_(self):
