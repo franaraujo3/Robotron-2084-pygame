@@ -31,8 +31,8 @@ class Gameplay(GameState):
         self.temp_pickups = []
         ship = PlayerShip('Sprites/Player/Player_Walking_Down', (screen_width / 2 - 100, screen_height - 140))
         self.health_bars = pygame.sprite.Group()
-        health1 = HealthBar(ship, 'ship_healthbar', 600, 420)
-        health1.rect.center = (0, -50)
+        health1 = HealthBar(ship, 'ship_healthbar', 180, 111)
+        health1.rect.center = (120, 40)
         self.health_bars.add(health1)
         self.players = [ship]
         self.ships.add(ship)
@@ -44,6 +44,7 @@ class Gameplay(GameState):
         self.level_timer = 0
         self.transition = 2
         self.done = False
+        self.died_lol = False
         self.next_state = "GAMEOVER"
 
     # Check if an event happens
@@ -118,6 +119,7 @@ class Gameplay(GameState):
                 self.done = True
                 pygame.mixer.fadeout(1500)
             else:
+                self.died_lol = True
                 self.ships.add(self.players[0])
                 self.sprites.add(self.players[0])
                 self.transition = 1
@@ -229,8 +231,9 @@ class Gameplay(GameState):
             ship.lose_hp(enemy.damage)
 
     def human_collect(self, human):
-        self.score += 1000 + self.humans_rescued * 1000
-        self.humans_rescued += 1
-        if self.humans_rescued % 10 == 0:
-            self.players[0].hp += 1
+        if not self.died_lol:
+            self.score += 1000 + self.humans_rescued * 1000
+            self.humans_rescued += 1
+            if self.humans_rescued % 10 == 0:
+                self.players[0].hp += 1
         human.kill()

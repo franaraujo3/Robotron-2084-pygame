@@ -126,7 +126,7 @@ class Electrode(Npc):
         super().__init__()
         self.hp = 1
         self.damage = 1
-        self.make_ship('Sprites/enemy_1', 'Sprites/enemy_fire')
+        self.make_ship('Sprites/Electrodes', 'Sprites/enemy_fire')
         self.move_timer = 0
         self.target = pygame.math.Vector2(0, 0)
 
@@ -139,7 +139,7 @@ class Tank(Npc):
         self.shot_time = 150
         self.damage = 1
         self.shot_tilt = 0
-        self.make_ship('Sprites/enemy_3', 'Sprites/enemy_fire2')
+        self.make_ship('Sprites/EnemyTank/Idle', 'Sprites/EnemyTank/Bullet')
         self.move_timer = 0
         self.pos = pygame.math.Vector2(self.rect.x, self.rect.y)
         self.vel = pygame.math.Vector2(0, 0)
@@ -167,7 +167,7 @@ class Tank(Npc):
     def create_shots(self):
         shot_direction = pygame.math.Vector2(self.target.x - self.rect.centerx,
                                              self.target.y - self.rect.centery).normalize()
-        shots = [BounceShot(self, shot_direction.x*5, shot_direction.y*5, shot_direction.x, shot_direction.y, 2)]
+        shots = [BounceShot(self, shot_direction.x, shot_direction.y, shot_direction.x, shot_direction.y, 2)]
         return shots
 
     def set_target(self, target):
