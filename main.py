@@ -21,7 +21,7 @@ states = {
     "WIN": GameWin()
 }
 
-game = Game(screen, states, "MENU")
+game = Game(screen, states, "GAMEPLAY")
 game.run()
 pygame.quit()
 sys.exit()
